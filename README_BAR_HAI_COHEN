@@ -1,0 +1,151 @@
+Authored by bar Hai cohen
+209499284
+
+
+==Description==
+
+In this exercise we have created a simple system that manages the memory.
+The system is using a "demand-paging" mechanism.
+
+We Simulation of processor accesses to memory. We use the segment page table mechanism that allows programs to be run when
+Only part of it is in memory. The program memory (also called virtual memory) is divided into pages that are loaded into the main memory as needed.
+We will realize a computer's virtual memory with up to one program that can run concurrently.
+The system is supporting two actions - writing to the memory and reading from it.
+In order to create the memory i have decided to add a felid to the data base struct- "Ram", in the constructor i allocated
+In order to manage the ram- to know if it is full or not, to know which frame is empty and to know in which frame there is the "oldest" 
+and the "newest" pages we use second chance algoritem.
+In order to know where a page is being held - the swap file or the executable file i added a field to the page_descriptor struct that saves 
+for each page where it is found. 
+
+The main function of the exercise will consist of a sequence of load and store (random) commands, this function simulates the reading/writing of the processor [the operations of the processor consist of reading, writing and calculation/processing operations - we will only concentrate on reading and writing for the purpose of simulating the memory operations on the computer] You can see an example of such a main at the end of the exercise. The bulk of the exercise will deal with the implementation of the load and store commands
+Through a page table that maps the logical to physical pages.
+
+Beyond the constructor and destructor, the main functions are -
+The function load: receives a logical address that must be accessed in order to read a data. Basically, the function makes sure that the relevant page of the requested process is in the main memory.
+The function store: receives an address that must be accessed in order to write data. Similar to load, care must be taken to have the page of the address in question for the given process in memory.
+
+==Data Structure==
+
+These data structures provide a foundation for managing memory in the system, tracking page information, and maintaining memory section details and page iteration counts.
+
+In this exercise we will realize a segment page table with 2 levels. The first level has 4 entries, one for each type of page (text, data, Bss, heap_stack data) and the second level is a "normal" page table. The size of each of the four internal "sub-tables" will be derived from the sizes that will be sent to the constructor - details below.
+
+1.main_memory: It is an array that represents the main memory. The size of the array is MEMORY_SIZE, which likely represents the total number of bytes available in the main memory.
+
+2.page_descriptor: It is a structure that represents a page descriptor. Each page in the memory has a corresponding page descriptor that holds information about its status and location. The fields of the page_descriptor structure are:
+
+valid: A boolean flag indicating whether the page is valid (mapped to a frame in the main memory) or not.
+frame: An integer representing the number of the block in the main memory where the page is stored.
+dirty: A boolean flag indicating whether the page has been modified (dirty) or not.
+swap_index: An integer representing the index of the page in the swap file.
+
+3.MemorySection: It is an enumeration that defines the different memory sections where a page can be found. The possible values are:
+
+TEXT: Represents the text section.
+DATA: Represents the data section.
+BSS: Represents the BSS (Block Started by Symbol) section.
+HEAP_STACK: Represents the heap and stack section.
+ram_memory_control: It is a structure used to track the memory section and the number of iterations for a page in RAM. The fields of the ram_memory_control structure are:
+
+4.section: Represents the memory section to which the page belongs (using the MemorySection enumeration).
+counter_iteration: Represents the number of iterations or references for the page in RAM.
+
+==Function==
+
+1.
+
+sim_mem::sim_mem(char exe_file_name[], char swap_file_name[], int text_size, int data_size, int bss_size,int heap_stack_size, int page_size):
+
+constructor for a class sim_mem. It initializes various properties and allocates memory for different data structures used in memory simulation.
+
+2.
+void sim_mem::init_page_table(page_descriptor **page_table) :
+
+The init_page_table function is a member function of the sim_mem class. It is responsible for allocating memory for the internal page table and initializing its entries.
+Overall, the init_page_table function sets up and initializes the internal page table with default values for each entry.
+
+3.
+print_memory():
+
+function to print the main_memory the Ram memory
+
+4.
+print_swap():
+
+function you provided is used to print the contents of the swap memory.
+It reads data from the swap file and displays it on the console.
+
+5.
+print_page_table():
+
+function to print the page descriptor table
+
+6.
+~sim_mem():
+
+destructor of the sim_mem class. It is responsible for deallocating the dynamically allocated memory and closing open file descriptors.
+
+7.
+vector<int> sim_mem::convertToBinary(int number):
+
+The convertToBinary function takes an integer number as input and converts it into a binary representation stored in a vector
+
+8.
+int sim_mem::count_bits(int decimal_number):
+
+function is used to count the number of bits required to represent a decimal number in binary.
+
+9.
+
+MemorySection getMemorySection(const vector<int>& indices);
+
+he getMemorySection function takes a vector address_vector representing the binary address and determines the corresponding MemorySection based on the first two bits of the address
+
+
+10.
+int sim_mem::binaryToDecimal(const vector<int> &address_vector, int startIndex, int endIndex):
+
+The binaryToDecimal function takes a vector address_vector representing a binary number and converts it to a decimal number within a specified range defined by startIndex and endIndex
+
+11.
+void sim_mem::read_page_from_file(int file_descriptor, int start_index, int page_size, char page[]):
+
+The read_page_from_file function reads a page of data from a file specified by file_descriptor starting from a given start_index with a specified page_size. The read data is stored in the page
+
+12.
+int sim_mem::update_Ram_Memory(MemorySection sec, int page_location):
+
+The update_Ram_Memory function updates the RAM memory by assigning a frame (page) to a given memory section (sec) and page location (page_location)
+
+13.
+int sim_mem::findMinField(int page_size, int page_location, int index_free):
+
+The findMinField function is called by the update_Ram_Memory function to find the minimum field in the second_chance array based on certain conditions.
+
+14.
+int sim_mem::write_to_swap(char *ppage):
+
+The write_to_swap function is responsible for writing a page (ppage) to the swap file. 
+
+
+==Program Files==
+mem_sim.cpp- the file contain only functions
+mem_sim.h- an header file ,contain structs and declerations of functions.
+main.cpp- contain the main only.
+
+
+==How to compile?==
+
+compile: gcc main.cpp sim_mem.cpp -o main
+run: ./main
+
+==Input:==
+Decimal Address  
+
+==Output:==
+main memory (RAM)
+swap file
+Page table stract
+char (that the load function return)
+
+
